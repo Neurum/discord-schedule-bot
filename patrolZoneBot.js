@@ -8,9 +8,9 @@ const client = new Client({
 client.on('ready', async () => {
   console.log(`${client.user.username} is online!`);
 
-  let guild = await client.guilds.cache.get(guildId);
+  let guild = client.guilds.cache.get(guildId);
 
-  const patrolZone = ['city', 'county1', 'county2'];
+  const patrolZone = ['Los Santos', 'Los Santos County', 'Los Santos County'];
   let currentPZ = patrolZone[0];
 
   const countyZones = ['2', '3', '11', '4'];
@@ -49,7 +49,7 @@ client.on('ready', async () => {
   let setPZ = () => {
     changePZ();
 
-    if (currentPZ === 'city') {
+    if (currentPZ === 'Los Santos') {
       changeCity();
       setPatrolZone = `Sector ${currentCity}`;
     } else {
@@ -65,17 +65,17 @@ client.on('ready', async () => {
         privacyLevel: 2,
         entityType: 3,
         entityMetadata: {
-          location: setPatrolZone,
+          location: currentPZ,
         },
       })
       .catch((error) => console.log(error.message));
   };
   let now = new Date();
-  let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 03, 0, 0) - now;
+  let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 09, 00, 0, 0) - now;
 
   setTimeout(() => {
     setPZ();
-    setInterval(setPZ, 60000);
+    setInterval(setPZ, 86400000);
   }, timeRemaining);
 });
 
