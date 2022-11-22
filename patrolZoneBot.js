@@ -8,7 +8,8 @@ const client = new Client({
 client.on('ready', async () => {
   console.log(`${client.user.username} is online!`);
 
-  guild = await client.guilds.cache.get(guildId);
+  let guild = await client.guilds.cache.get(guildId);
+
   const patrolZone = ['city', 'county1', 'county2'];
   let currentPZ = patrolZone[0];
 
@@ -41,11 +42,11 @@ client.on('ready', async () => {
   const date = new Date();
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
-  let day = date.getDate() + 1;
+  let day = date.getDate();
   let startTime = `${year}-${month}-${day}T23:00:00+0000`;
   let endTime = `${year}-${month}-${day + 1}T04:59:59+0000`;
 
-  function setPZ() {
+  let setPZ = () => {
     changePZ();
 
     if (currentPZ === 'city') {
@@ -68,14 +69,14 @@ client.on('ready', async () => {
         },
       })
       .catch((error) => console.log(error.message));
-  }
-
+  };
   let now = new Date();
-  let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 05, 0, 0) - now;
-  if (timeRemaining <= 0) {
-    timeRemaining = 86400000;
-  }
-  setInterval(setPZ, timeRemaining);
+  let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 03, 0, 0) - now;
+
+  setTimeout(() => {
+    setPZ();
+    setInterval(setPZ, 60000);
+  }, timeRemaining);
 });
 
 client.login(token);
