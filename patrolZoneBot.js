@@ -72,9 +72,9 @@ function setPZ() {
 }
 
 let now = new Date();
-let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 44, 0, 0) - now;
-if (timeRemaining <= 0) {
+let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 04, 0, 0, 0) - now;
+if (timeRemaining < 0) {
   timeRemaining += 8640000000;
 }
-// setInterval(setPZ, 30000);
+setTimeout(setPZ, timeRemaining);
 client.login(token);
