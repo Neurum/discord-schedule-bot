@@ -1,12 +1,8 @@
-const { Client, Guild, GatewayIntentBits } = require('discord.js');
-const { token } = require('./config.json');
+const { Client, GatewayIntentBits } = require('discord.js');
+const { token, guildId } = require('./config.json');
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildScheduledEvents],
-});
-
-client.once('ready', () => {
-  console.log(`${client.user.username} is online!`);
 });
 
 const patrolZone = ['city', 'county1', 'county2'];
@@ -37,7 +33,15 @@ const changeCity = () => {
   cityZones.push(removed);
   currentCity = cityZones[0];
 };
-let setPZ = () => {
+
+const date = new Date();
+let year = date.getFullYear();
+let month = date.getMonth() + 1;
+let day = date.getDate() + 1;
+let startTime = `${year}-${month}-${day}T23:00:00+0000`;
+let endTime = `${year}-${month}-${day + 1}T04:59:59+0000`;
+
+function setPZ() {
   changePZ();
 
   if (currentPZ === 'city') {
@@ -48,32 +52,29 @@ let setPZ = () => {
     setPatrolZone = `Sector ${currentCounty}`;
   }
 
-  const date = new Date();
-  let year = date.getFullYear();
-  let month = date.getMonth() + 1;
-  let day = date.getDate();
-  let usedDate = `${year}-${month}-${day}`;
+  client.on('ready', async () => {
+    console.log(`${client.user.username} is online!`);
 
-  client.guilds.scheduledEvents
-    .create({
-      name: setPatrolZone,
-      scheduledStartTime: `${usedDate}T18:00:00+0000`,
-      scheduledEndTime: `${usedDate}T23:59:59+0000`,
-      privacyLevel: 2,
-      entityType: 'EXTERNAL',
-      entityMetadata: {
-        location: setPatrolZone,
-      },
-    })
-    .catch((error) => console.log(error.message));
-};
-let now = new Date();
-let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 08, 45, 0) - now;
-if (timeRemaining <= 0) {
-  timeRemaining += 86400000;
+    const guild = await client.guilds.fetch(guildId);
+    guild.scheduledEvents
+      .create({
+        name: setPatrolZone,
+        scheduledStartTime: `${startTime}`,
+        scheduledEndTime: `${endTime}`,
+        privacyLevel: 2,
+        entityType: 3,
+        entityMetadata: {
+          location: setPatrolZone,
+        },
+      })
+      .catch((error) => console.log(error.message));
+  });
 }
-setTimeout(() => {
-  setPZ();
-}, timeRemaining);
 
+let now = new Date();
+let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 44, 0, 0) - now;
+if (timeRemaining <= 0) {
+  timeRemaining += 8640000000;
+}
+// setInterval(setPZ, 30000);
 client.login(token);
