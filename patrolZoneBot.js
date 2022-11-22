@@ -5,57 +5,57 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildScheduledEvents],
 });
 
-const patrolZone = ['city', 'county1', 'county2'];
-let currentPZ = patrolZone[0];
+client.on('ready', async () => {
+  console.log(`${client.user.username} is online!`);
 
-const countyZones = ['2', '3', '11', '4'];
-const cityZones = ['5', '9', '10', '8', '6', '7'];
+  guild = await client.guilds.cache.get(guildId);
+  const patrolZone = ['city', 'county1', 'county2'];
+  let currentPZ = patrolZone[0];
 
-let currentCounty = null;
-let currentCity = null;
+  const countyZones = ['2', '3', '11', '4'];
+  const cityZones = ['5', '9', '10', '8', '6', '7'];
 
-let setPatrolZone = null;
+  let currentCounty = null;
+  let currentCity = null;
 
-const changePZ = () => {
-  const removed = patrolZone.shift();
-  patrolZone.push(removed);
-  currentPZ = patrolZone[0];
-};
+  let setPatrolZone = null;
 
-const changeCounty = () => {
-  const removed = countyZones.shift();
-  countyZones.push(removed);
-  currentCounty = countyZones[0];
-};
+  const changePZ = () => {
+    const removed = patrolZone.shift();
+    patrolZone.push(removed);
+    currentPZ = patrolZone[0];
+  };
 
-const changeCity = () => {
-  const removed = cityZones.shift();
-  cityZones.push(removed);
-  currentCity = cityZones[0];
-};
+  const changeCounty = () => {
+    const removed = countyZones.shift();
+    countyZones.push(removed);
+    currentCounty = countyZones[0];
+  };
 
-const date = new Date();
-let year = date.getFullYear();
-let month = date.getMonth() + 1;
-let day = date.getDate() + 1;
-let startTime = `${year}-${month}-${day}T23:00:00+0000`;
-let endTime = `${year}-${month}-${day + 1}T04:59:59+0000`;
+  const changeCity = () => {
+    const removed = cityZones.shift();
+    cityZones.push(removed);
+    currentCity = cityZones[0];
+  };
 
-function setPZ() {
-  changePZ();
+  const date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate() + 1;
+  let startTime = `${year}-${month}-${day}T23:00:00+0000`;
+  let endTime = `${year}-${month}-${day + 1}T04:59:59+0000`;
 
-  if (currentPZ === 'city') {
-    changeCity();
-    setPatrolZone = `Sector ${currentCity}`;
-  } else {
-    changeCounty();
-    setPatrolZone = `Sector ${currentCounty}`;
-  }
+  function setPZ() {
+    changePZ();
 
-  client.on('ready', async () => {
-    console.log(`${client.user.username} is online!`);
+    if (currentPZ === 'city') {
+      changeCity();
+      setPatrolZone = `Sector ${currentCity}`;
+    } else {
+      changeCounty();
+      setPatrolZone = `Sector ${currentCounty}`;
+    }
 
-    const guild = await client.guilds.fetch(guildId);
     guild.scheduledEvents
       .create({
         name: setPatrolZone,
@@ -68,13 +68,14 @@ function setPZ() {
         },
       })
       .catch((error) => console.log(error.message));
-  });
-}
+  }
 
-let now = new Date();
-let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 04, 0, 0, 0) - now;
-if (timeRemaining < 0) {
-  timeRemaining += 8640000000;
-}
-setTimeout(setPZ, timeRemaining);
+  let now = new Date();
+  let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 05, 0, 0) - now;
+  if (timeRemaining <= 0) {
+    timeRemaining = 86400000;
+  }
+  setInterval(setPZ, timeRemaining);
+});
+
 client.login(token);
