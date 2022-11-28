@@ -1,4 +1,5 @@
 const { Client, GatewayIntentBits } = require('discord.js');
+const cron = require('node-cron');
 const { token, guildId } = require('./config.json');
 
 const client = new Client({
@@ -46,7 +47,7 @@ client.on('ready', async () => {
   let startTime = `${year}-${month}-${day}T23:00:00+0000`;
   let endTime = `${year}-${month}-${day + 1}T04:59:59+0000`;
 
-  let setPZ = () => {
+  cron.schedule('* * * * *', () => {
     changePZ();
 
     if (currentPZ === 'Los Santos') {
@@ -70,14 +71,41 @@ client.on('ready', async () => {
       })
       .catch((error) => console.log(error.message));
     console.log(`Event for ${setPatrolZone} sent!`);
-  };
-  let now = new Date();
-  let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 51, 0, 0) - now;
+  });
 
-  setTimeout(() => {
-    setPZ();
-    setInterval(setPZ, 15000);
-  }, timeRemaining);
+  // let setPZ = () => {
+  //   changePZ();
+
+  //   if (currentPZ === 'Los Santos') {
+  //     changeCity();
+  //     setPatrolZone = `Sector ${currentCity}`;
+  //   } else {
+  //     changeCounty();
+  //     setPatrolZone = `Sector ${currentCounty}`;
+  //   }
+
+  //   guild.scheduledEvents
+  //     .create({
+  //       name: setPatrolZone,
+  //       scheduledStartTime: `${startTime}`,
+  //       scheduledEndTime: `${endTime}`,
+  //       privacyLevel: 2,
+  //       entityType: 3,
+  //       entityMetadata: {
+  //         location: currentPZ,
+  //       },
+  //     })
+  //     .catch((error) => console.log(error.message));
+  //   console.log(`Event for ${setPatrolZone} sent!`);
+  // };
+
+  // let now = new Date();
+  // let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 51, 0, 0) - now;
+
+  // setTimeout(() => {
+  //   setPZ();
+  //   setInterval(setPZ, 15000);
+  // }, timeRemaining);
 });
 
 client.login(token);
