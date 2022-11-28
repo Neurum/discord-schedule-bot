@@ -69,13 +69,14 @@ client.on('ready', async () => {
         },
       })
       .catch((error) => console.log(error.message));
+    console.log(`Event for ${setPatrolZone} sent!`);
   };
   let now = new Date();
-  let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 09, 00, 0, 0) - now;
+  let timeRemaining = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 51, 0, 0) - now;
 
   setTimeout(() => {
     setPZ();
-    setInterval(setPZ, 86400000);
+    setInterval(setPZ, 15000);
   }, timeRemaining);
 });
 
